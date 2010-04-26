@@ -139,7 +139,8 @@ Unsucessful matches raise an exception with the input and the patterns
 
 Currently there are two tiny macros:
 
-fm   ([& pats]) => `(fn [& xs#] (match xs# ~@pats))    
+fm   ([& pats]) => `(fn [& xs#] (match xs# ~@pats))       
+
 defm ([name & pats]) => `(defn ~name [& xs#] (match xs# ~@pats))    
 
 ## TODO
