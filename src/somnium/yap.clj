@@ -44,7 +44,7 @@
 	       gets
 	       (-> gets vec (conj `(nthnext ~sym ~xlen))))
 	xs   (if-not y xs (conj xs y))
-	op   (if y '>= =)]
+	op   (if y >= =)]
     (fn [more]
       `(when* 
 	(seqable? ~val)
@@ -92,6 +92,6 @@
 (defn match-seq [val [op arg as]]
   (fn [more]
     (let [f (fn [p] `(when* ~p ~(if as `(let [~as ~val] ~more) more)))]
-      (match op
-        :?    (f `(~arg ~val))
-	:type (f `(= ~arg (type ~val)))))))
+      (condp = op
+	'?    (f `(~arg ~val))
+	'type (f `(= ~arg (type ~val)))))))

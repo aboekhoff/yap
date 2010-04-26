@@ -37,7 +37,8 @@ Except for _, which matches anything and ignores it.
 
 ## Vectors
 
-Vectors match against anything seqable
+Pretty much the same as clojure's vector destructuring --     
+they match against anything seqable
 
     (match [1 2 3 4]
       [_ a _ b] (+ a (* b 10))) => 42
@@ -62,6 +63,13 @@ and the symbol `&' indicates match any more as usual
       [a b c]      (* a b c)
       [a b c & ds] ds)
         => (4 5)
+
+but size does matter    
+
+    (match [1 2 3 4]
+      [_ _]       :wtf
+      [_ _ _]     :wtf
+      [_ _ _ & _] :yup) => :yup
 
 ## Maps
 
@@ -94,7 +102,15 @@ matches if it is truthy.
 
 A list beginning with `type' is just a little sugar for
   
-    (= (type java.lang.String) match-variable)
+    `(= (type ~pat-expr) ~match-variable)
+
+When a list has a symbol as its last element it binds a    
+successful match to it.    
+
+    (match [:acme :quendor :avatar]
+      [_ "foo" _] :wtf
+      [_ (? keyword? x) (? string? y)] :wtf    
+      [_ (? keyword? x) (? keyword? y)] [x y]) => [:quendor :avatar]    
 
 so    
 
@@ -121,14 +137,18 @@ Unsucessful matches raise an exception with the input and the patterns
 
 ## Functions
 
-Currently 
+Currently there are two tiny macros:
+
+fm   ([& pats]) => `(fn [& xs#] (match xs# ~@pats))    
+defm ([name & pats]) => `(defn ~name [& xs#] (match xs# ~@pats))    
 
 ## TODO
 
-Tests
-Support regex-patterns?
-Sugar for guards?
-Make list patterns more flexible/extensible?
+Tests    
+Docstrings    
+Support regex-patterns?    
+Sugar for guards?    
+Make list patterns more flexible/extensible?    
 
 ## License
 
