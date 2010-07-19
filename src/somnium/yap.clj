@@ -47,10 +47,10 @@
 	op   (if y >= =)]
     (fn [more]
       `(when* 
-	(seqable? ~val)
+	(and (seqable? ~val) (not (map? ~val)))
 	(let [~sym ~val]
 	  (when* 
-	   (~op (count ~sym) (count (quote ~xs)))
+	   (~op (count ~sym) ~xlen)
 	   ~(fold (cons more
 			(reverse (map match-one gets xs))))))))))
 
@@ -93,5 +93,13 @@
   (fn [more]
     (let [f (fn [p] `(when* ~p ~(if as `(let [~as ~val] ~more) more)))]
       (condp = op
-	'?    (f `(~arg ~val))
-	'type (f `(= ~arg (type ~val)))))))
+	'?     (f `(~arg ~val))
+	'type  (f `(instance? ~arg (type ~val)))
+	'quote (f `(= (quote ~arg) ~val))))))
+
+(comment
+  (defm-lazy mapp
+    f []       -> []
+    f [x & xs] | (< x 4) ... 
+               | (< x 10) ... 
+               where [x ... y ...]))
